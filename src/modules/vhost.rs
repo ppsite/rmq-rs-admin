@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use std::collections::HashMap;
+use std::{collections::HashMap, error::Error};
 
 use super::client::Client;
 
@@ -20,25 +20,24 @@ pub struct Vhost {
     pub tracing: bool,
 }
 
-#[derive(Default)]
 pub struct VhostManager {
-    client: Client,
+    client: Box<Client>,
 }
 
 impl VhostManager {
-    pub fn new(client: Client) -> VhostManager {
+    pub fn new(client: Box<Client>) -> VhostManager {
         VhostManager { client }
     }
 
-    pub async fn get(&self) -> Vec<Vhost> {
+    pub async fn get(&self) -> Result<Vec<Vhost>, Box<dyn Error>> {
         let uri = "api/vhosts".to_string();
-        self.client
+        let vhosts = self
+            .client
             .get(uri, None)
-            .await
-            .unwrap()
+            .await?
             .json::<Vec<Vhost>>()
-            .await
-            .unwrap()
+            .await?;
+        Ok(vhosts)
     }
 
     // #[allow(dead_code)]

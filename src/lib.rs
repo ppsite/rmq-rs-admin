@@ -1,18 +1,20 @@
-use modules::{client::Client, vhost::VhostManager};
+use modules::{client::Client, queues::QueueManager, vhost::VhostManager};
 
 pub mod modules;
 
-#[derive(Default)]
 pub struct Rabbitmq {
     pub vhost: VhostManager,
+    pub queue: QueueManager,
 }
 
 impl Rabbitmq {
     pub fn new(host: String, port: u16, auth_token: String, timeout: u8) -> Self {
         let client = Client::new(host, port, auth_token, timeout);
-        let vhost_manager = VhostManager::new(client);
+        let vhost_manager = VhostManager::new(client.clone());
+        let queue_manager = QueueManager::new(client.clone());
         Rabbitmq {
             vhost: vhost_manager,
+            queue: queue_manager,
         }
     }
 }

@@ -1,7 +1,8 @@
-use std::{collections::HashMap, time};
+use std::{collections::HashMap, error::Error, time};
 
-use reqwest::{header::HeaderMap, Error, Response};
+use reqwest::{header::HeaderMap, Response};
 
+#[derive(Clone)]
 pub struct Client {
     pub host: String,
     pub port: u16,
@@ -9,28 +10,21 @@ pub struct Client {
     pub timeout: u8,
 }
 
-impl Default for Client {
-    fn default() -> Self {
-        Client::new(
-            "http://127.0.0.1".to_string(),
-            15672,
-            "Z3Vlc3Q6Z3Vlc3Q=".to_string(),
-            5,
-        )
-    }
-}
-
 impl Client {
-    pub fn new(host: String, port: u16, auth_token: String, timeout: u8) -> Self {
-        Client {
+    pub fn new(host: String, port: u16, auth_token: String, timeout: u8) -> Box<Client> {
+        Box::new(Client {
             host,
             port,
             auth_token,
             timeout,
-        }
+        })
     }
 
-    pub async fn get(&self, uri: String, headers: Option<HeaderMap>) -> Result<Response, Error> {
+    pub async fn get(
+        &self,
+        uri: String,
+        headers: Option<HeaderMap>,
+    ) -> Result<Response, Box<dyn Error>> {
         let client = reqwest::Client::new();
 
         let mut _headers = HeaderMap::new();
@@ -40,20 +34,18 @@ impl Client {
         }
         _headers.insert(
             "Authorization",
-            format!("Basic {}", self.auth_token).parse().unwrap(),
+            format!("Basic {}", self.auth_token).parse()?,
         );
 
-        let url: String = format!("{}:{}/{}", self.host, self.port, uri)
-            .parse()
-            .unwrap();
+        let url: String = format!("{}:{}/{}", self.host, self.port, uri).parse()?;
 
-        let response = client
+        let client = client
             .get(url)
             .headers(_headers)
             .timeout(time::Duration::from_secs(self.timeout.into()))
             .send()
-            .await;
-        return response;
+            .await?;
+        Ok(client)
     }
 
     pub async fn post(
@@ -61,7 +53,7 @@ impl Client {
         uri: String,
         headers: Option<HeaderMap>,
         body: Option<HashMap<String, String>>,
-    ) -> Result<Response, Error> {
+    ) -> Result<Response, Box<dyn Error>> {
         let client = reqwest::Client::new();
 
         let mut _headers = HeaderMap::new();
@@ -71,12 +63,10 @@ impl Client {
         }
         _headers.insert(
             "Authorization",
-            format!("Basic {}", self.auth_token).parse().unwrap(),
+            format!("Basic {}", self.auth_token).parse()?,
         );
 
-        let url: String = format!("{}:{}/{}", self.host, self.port, uri)
-            .parse()
-            .unwrap();
+        let url: String = format!("{}:{}/{}", self.host, self.port, uri).parse()?;
 
         let mut _body = HashMap::new();
         match body {
@@ -89,7 +79,7 @@ impl Client {
             .timeout(time::Duration::from_secs(self.timeout.into()))
             .json(&_body)
             .send()
-            .await;
-        response
+            .await?;
+        Ok(response)
     }
 }
