@@ -25,8 +25,8 @@ pub struct VhostManager {
 }
 
 impl VhostManager {
-    pub fn new(client: Box<Client>) -> VhostManager {
-        VhostManager { client }
+    pub fn new(client: Box<Client>) -> Self {
+        Self { client }
     }
 
     pub async fn get(&self) -> Result<Vec<Vhost>, Box<dyn Error>> {
@@ -39,13 +39,4 @@ impl VhostManager {
             .await?;
         Ok(vhosts)
     }
-
-    // #[allow(dead_code)]
-    // #[test]
-    // async fn test_get() {
-    //     let client = Client::default();
-    //     let vhost_manager = VhostManager::new(client);
-    //     let vhosts = vhost_manager.get().await;
-    //     assert_eq!(vhosts.len() >= 1, true);
-    // }
 }
