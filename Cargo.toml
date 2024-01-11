@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2021"
 authors = ["peizhenfei <peizhenfei@hotmail.com>"]
 description = "Rabbitmq Rust Admin API Client"
+documentation = "https://github.com/ppsite/rmq-rs-admin"
+repository = "https://github.com/ppsite/rmq-rs-admin"
+homepage = "https://github.com/ppsite/"
 license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
