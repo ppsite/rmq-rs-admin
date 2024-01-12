@@ -1,15 +1,15 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, error::Error};
 
 use super::client::Client;
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct MessageStats {
     pub publish: u32,
     pub publish_details: HashMap<String, f32>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Queue {
     pub arguments: HashMap<String, String>,
     pub auto_delete: bool,
@@ -21,7 +21,7 @@ pub struct Queue {
     pub exclusive_consumer_tag: Option<String>,
     pub garbage_collection: HashMap<String, u32>,
     pub head_message_timestamp: Option<String>,
-    pub idle_since: String,
+    pub idle_since: Option<String>,
     pub memory: u32,
     pub message_bytes: u32,
     pub message_bytes_paged_out: u32,
@@ -62,12 +62,12 @@ impl QueueManager {
 
     pub async fn get(&self) -> Result<Vec<Queue>, Box<dyn Error>> {
         let uri = "api/queues".to_string();
-        let queues = self
+        let objects = self
             .client
             .get(uri, None)
             .await?
             .json::<Vec<Queue>>()
             .await?;
-        Ok(queues)
+        Ok(objects)
     }
 }

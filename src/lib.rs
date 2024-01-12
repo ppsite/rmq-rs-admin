@@ -1,6 +1,6 @@
 use modules::{
-    client::Client, cluster_name::ClusterNameManager, nodes::NodeManager, queues::QueueManager,
-    vhost::VhostManager,
+    channel::ChannelManager, client::Client, cluster_name::ClusterNameManager,
+    connection::ConnectionManager, node::NodeManager, queue::QueueManager, vhost::VhostManager,
 };
 
 pub mod modules;
@@ -10,6 +10,8 @@ pub struct Rabbitmq {
     pub queue: QueueManager,
     pub cluster_name: ClusterNameManager,
     pub node: NodeManager,
+    pub connection: ConnectionManager,
+    pub channel: ChannelManager,
 }
 
 impl Rabbitmq {
@@ -19,11 +21,15 @@ impl Rabbitmq {
         let queue_manager = QueueManager::new(client.clone());
         let cluster_name_manager = ClusterNameManager::new(client.clone());
         let node_manager = NodeManager::new(client.clone());
+        let connection_manager = ConnectionManager::new(client.clone());
+        let channel_manager = ChannelManager::new(client.clone());
         Rabbitmq {
             vhost: vhost_manager,
             queue: queue_manager,
             cluster_name: cluster_name_manager,
             node: node_manager,
+            connection: connection_manager,
+            channel: channel_manager,
         }
     }
 }

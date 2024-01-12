@@ -1,10 +1,10 @@
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 
-use super::client::Client;
+use super::{client::Client, utils::RateDetails};
 use std::collections::HashMap;
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Node {
     pub partitions: Vec<String>,
     pub os_pid: String,
@@ -103,39 +103,34 @@ pub struct Node {
     pub metrics_gc_queue_length: MetricsGcQueueLength,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct ExchangeType {
     pub name: String,
     pub description: String,
     pub enabled: bool,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct AuthMechanism {
     pub name: String,
     pub description: String,
     pub enabled: bool,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Application {
     pub name: String,
     pub description: String,
     pub version: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Context {
     pub description: String,
     pub path: String,
     pub cowboy_opts: String,
     pub port: String,
     pub protocol: Option<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct RateDetails {
-    pub rate: f64,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -181,12 +176,12 @@ impl NodeManager {
 
     pub async fn get(&self) -> Result<Vec<Node>, Box<dyn Error>> {
         let uri = "api/nodes".to_string();
-        let nodes = self
+        let objects = self
             .client
             .get(uri, None)
             .await?
             .json::<Vec<Node>>()
             .await?;
-        Ok(nodes)
+        Ok(objects)
     }
 }

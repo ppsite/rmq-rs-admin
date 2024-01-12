@@ -4,6 +4,11 @@
 
 In some cases, you may need to interact with the RabbitMQ HTTP API. This library provides a simple way to interact with the API.
 
+## Test
+
+| Rabbitmq | Erlang | TestState |
+| 3.12.12 | 25.3.2.8 | PASS |
+
 ## Usage
 
 ```yaml
@@ -66,12 +71,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
 | /api/all-configuration (deprecated) | GET |  |
 | /api/definitions/vhost | GET | None |
 | | POST |  |
-| /api/connections | GET |  |
+| /api/connections | GET | DONE |
 | /api/vhosts/vhost/connections | GET |  |
 | /api/connections/name | GET |  |
 | | DELETE |  |
 | /api/connections/name/channels | GET |  |
-| /api/channels | GET |  |
+| /api/channels | GET | DONE |
 | /api/vhosts/vhost/channels | GET |  |
 | /api/channels/channel | GET |  |
 | /api/consumers | GET |  |
